@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindForge AI — Autonomous Multi-Agent Study Companion</title>
+  <meta name="description" content="Next-generation agentic AI learning platform for students featuring Socratic tutoring, active recall, autonomous research, study planning, and essay critique.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-mark">
+          <div class="logo-orb"></div>
+          <span class="logo-icon">⚡</span>
+        </div>
+        <div class="logo-text">
+          <h2>MindForge<span>.ai</span></h2>
+          <span class="badge-agentic">Multi-Agent v2.4</span>
+        </div>
+      </div>
+
+      <div class="agent-status-pill">
+        <span class="status-indicator online"></span>
+        <span class="agent-cluster-label">5 Agents Active & Synced</span>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-label">MAIN WORKSPACE</div>
+        <button class="nav-btn active" data-tab="workspace" id="nav-workspace">
+          <span class="nav-icon">🤖</span>
+          <span class="nav-title">Agentic Workroom</span>
+          <span class="nav-badge">Live</span>
+        </button>
+        <button class="nav-btn" data-tab="socratic" id="nav-socratic">
+          <span class="nav-icon">🧠</span>
+          <span class="nav-title">Socratic Tutor</span>
+        </button>
+        <button class="nav-btn" data-tab="flashcards" id="nav-flashcards">
+          <span class="nav-icon">🎴</span>
+          <span class="nav-title">Active Recall Deck</span>
+          <span class="nav-counter" id="deck-count-badge">8</span>
+        </button>
+        <button class="nav-btn" data-tab="quiz" id="nav-quiz">
+          <span class="nav-icon">🎯</span>
+          <span class="nav-title">Quiz Arena</span>
+        </button>
+        <button class="nav-btn" data-tab="planner" id="nav-planner">
+          <span class="nav-icon">📅</span>
+          <span class="nav-title">Adaptive Planner</span>
+        </button>
+        <button class="nav-btn" data-tab="critic" id="nav-critic">
+          <span class="nav-icon">✍️</span>
+          <span class="nav-title">Essay & Rubric Critic</span>
+        </button>
+      </nav>
+
+      <!-- Active Agents Quick Switcher -->
+      <div class="sidebar-agents">
+        <div class="nav-section-label">SPECIALIZED AGENTS</div>
+        <div class="agent-chips">
+          <div class="agent-chip active" data-agent="orchestrator">
+            <span class="chip-avatar">🔮</span>
+            <div class="chip-info">
+              <span class="chip-name">Orchestrator</span>
+              <span class="chip-role">Autonomous Dispatcher</span>
+            </div>
+          </div>
+          <div class="agent-chip" data-agent="socratic">
+            <span class="chip-avatar">🧠</span>
+            <div class="chip-info">
+              <span class="chip-name">Socrates</span>
+              <span class="chip-role">Inquiry Tutor</span>
+            </div>
+          </div>
+          <div class="agent-chip" data-agent="researcher">
+            <span class="chip-avatar">📚</span>
+            <div class="chip-info">
+              <span class="chip-name">Athena</span>
+              <span class="chip-role">Notes & Synthesis</span>
+            </div>
+          </div>
+          <div class="agent-chip" data-agent="challenger">
+            <span class="chip-avatar">⚡</span>
+            <div class="chip-info">
+              <span class="chip-name">Kortex</span>
+              <span class="chip-role">Quiz & Active Recall</span>
+            </div>
+          </div>
+          <div class="agent-chip" data-agent="planner">
+            <span class="chip-avatar">⏱️</span>
+            <div class="chip-info">
+              <span class="chip-name">Chronos</span>
+              <span class="chip-role">Pacing & Milestones</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Pomodoro mini widget -->
+      <div class="sidebar-timer">
+        <div class="timer-display">
+          <span class="timer-label">FOCUS SESSION</span>
+          <span class="timer-time" id="sidebar-timer-digits">25:00</span>
+        </div>
+        <div class="timer-actions">
+          <button class="btn-timer-icon" id="timer-toggle-btn" title="Start/Pause Timer">▶</button>
+          <button class="btn-timer-icon" id="timer-reset-btn" title="Reset Timer">↺</button>
+        </div>
+      </div>
+
+      <!-- Footer / API settings trigger -->
+      <div class="sidebar-footer">
+        <button class="api-key-button" id="open-api-modal-btn">
+          <span class="key-status-dot" id="api-status-dot"></span>
+          <span id="api-status-label">Local Agent Engine</span>
+          <span class="settings-gear">⚙️</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle navigation">☰</button>
+          <div class="breadcrumb">
+            <span class="current-space" id="topbar-title">Agentic Workroom</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="active-agent-tag" id="topbar-agent-tag">Orchestrator Mode</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Subject Preset Picker -->
+          <div class="preset-dropdown-wrapper">
+            <label for="subject-select" class="visually-hidden">Subject Domain</label>
+            <select id="subject-select" class="subject-select">
+              <option value="cs">💻 Computer Science & AI</option>
+              <option value="math">📐 Advanced Calculus & Linear Algebra</option>
+              <option value="physics">⚛️ Quantum & Classical Physics</option>
+              <option value="biology">🧬 Molecular Biology & Genetics</option>
+              <option value="history">🏛️ Modern & World History</option>
+              <option value="literature">📖 Literature & Literary Analysis</option>
+              <option value="custom">✨ Custom User Subject</option>
+            </select>
+          </div>
+
+          <button class="btn-primary-sm" id="quick-clear-btn" title="Clear Conversation">
+            <span>🗑️</span>
+            <span>Reset</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB 1: Main Agentic Workroom -->
+      <section class="tab-pane active" id="pane-workspace">
+        <div class="workspace-grid">
+          
+          <!-- Left: Chat Stream & Interactive Command Canvas -->
+          <div class="conversation-column">
+            
+            <!-- Quick prompt pills -->
+            <div class="quick-starters-scroll">
+              <span class="starter-label">Quick Prompts:</span>
+              <button class="prompt-chip" data-prompt="Teach me Dijkstra's algorithm step-by-step using an intuitive real-world analogy.">
+                🛣️ Dijkstra's Analogy
+              </button>
+              <button class="prompt-chip" data-prompt="Generate 5 active-recall flashcards on Photosynthesis Light-Dependent Reactions.">
+                🌿 Photosynthesis Cards
+              </button>
+              <button class="prompt-chip" data-prompt="Break down my 2-week final exam prep into daily Pomodoro study milestones.">
+                📅 2-Week Exam Plan
+              </button>
+              <button class="prompt-chip" data-prompt="Explain Quantum Entanglement simply, then test my understanding with a conceptual riddle.">
+                ⚛️ Quantum Riddle
+              </button>
+            </div>
+
+            <!-- Messages Stream -->
+            <div class="chat-stream" id="chat-stream">
+              <!-- Welcome Message from Orchestrator -->
+              <div class="message-card system-welcome">
+                <div class="message-avatar-wrap">
+                  <div class="avatar-glow"></div>
+                  <span class="avatar-emoji">🔮</span>
+                </div>
+                <div class="message-body">
+                  <div class="message-header">
+                    <span class="sender-name">MindForge Orchestrator</span>
+                    <span class="agent-role-badge">Coordinating 5 Autonomous Agents</span>
+                    <span class="timestamp">Just now</span>
+                  </div>
+                  <div class="message-content">
+                    <p>Welcome to your personal <strong>Agentic Study Suite</strong>! I don't just answer questions—I decompose your academic goals, delegate to specialized student agents, formulate reasoning chains, and generate interactive artifacts (flashcards, quizzes, study guides, and milestone schedules).</p>
+                    <div class="welcome-actions">
+                      <div class="agent-legend-card">
+                        <span class="legend-icon">🧠</span>
+                        <div>
+                          <strong>Socratic Tutor</strong>
+                          <p>Guides your thinking with hints & probing questions instead of rote answers.</p>
+                        </div>
+                      </div>
+                      <div class="agent-legend-card">
+                        <span class="legend-icon">🎴</span>
+                        <div>
+                          <strong>Recall & Quiz Agent</strong>
+                          <p>Instantly turns concepts into 3D interactive flashcards & timed test arenas.</p>
+                        </div>
+                      </div>
+                      <div class="agent-legend-card">
+                        <span class="legend-icon">📅</span>
+                        <div>
+                          <strong>Adaptive Planner</strong>
+                          <p>Deconstructs intimidating syllabi into high-leverage daily Pomodoro blocks.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="chat-input-container">
+              <!-- Live Agent Thinking Indicator (Floating) -->
+              <div class="agent-thinking-banner" id="agent-thinking-banner" style="display: none;">
+                <div class="thinking-spinner"></div>
+                <div class="thinking-details">
+                  <span class="thinking-step" id="thinking-step-text">Agent Analyzing Task...</span>
+                  <span class="thinking-agent" id="thinking-agent-name">🧠 Socrates Tutor</span>
+                </div>
+              </div>
+
+              <form id="chat-form" class="chat-form">
+                <div class="input-actions-left">
+                  <select id="direct-agent-select" class="direct-agent-select" title="Route to specific agent or let Orchestrator decide">
+                    <option value="auto">✨ Auto-Orchestrate</option>
+                    <option value="socratic">🧠 Socrates (Socratic Tutor)</option>
+                    <option value="researcher">📚 Athena (Notes & Synthesis)</option>
+                    <option value="challenger">⚡ Kortex (Quiz & Flashcards)</option>
+                    <option value="planner">⏱️ Chronos (Study Planner)</option>
+                    <option value="critic">✍️ Critic (Essay Evaluator)</option>
+                  </select>
+                </div>
+                
+                <textarea 
+                  id="user-input" 
+                  class="chat-textarea" 
+                  rows="1" 
+                  placeholder="Ask a question, paste notes, or say 'Quiz me on Calculus limits'..."
+                  required
+                ></textarea>
+
+                <div class="input-actions-right">
+                  <button type="button" class="btn-action-tool" id="attach-notes-btn" title="Paste or load study sample">
+                    <span>📋 Sample Notes</span>
+                  </button>
+                  <button type="submit" class="btn-send" id="btn-send" aria-label="Send query">
+                    <span class="send-icon">▲</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+          <!-- Right: Live Agent Thought Log & Artifact Inspector -->
+          <div class="artifacts-column">
+            
+            <!-- Tab Switcher for Inspector -->
+            <div class="inspector-tabs">
+              <button class="inspector-tab-btn active" data-view="thought-stream">
+                <span>⚡ Agent Reasoning Loop</span>
+              </button>
+              <button class="inspector-tab-btn" data-view="active-artifacts">
+                <span>📦 Generated Artifacts (<span id="artifact-count">0</span>)</span>
+              </button>
+              <button class="inspector-tab-btn" data-view="concept-map">
+                <span>🕸️ Mind Map</span>
+              </button>
+            </div>
+
+            <!-- View 1: Agent Reasoning & Execution Steps -->
+            <div class="inspector-view active" id="view-thought-stream">
+              <div class="inspector-header">
+                <div>
+                  <h3 class="inspector-title">Autonomous Agent Trace</h3>
+                  <p class="inspector-subtitle">Observe live multi-agent deliberation, tool calls, and reflection</p>
+                </div>
+                <button class="btn-glass-sm" id="clear-trace-btn">Clear Trace</button>
+              </div>
+
+              <div class="thought-stream-container" id="thought-stream-container">
+                <div class="empty-trace-state" id="empty-trace-state">
+                  <div class="pulsing-halo">🔍</div>
+                  <h4>Ready for Deliberation</h4>
+                  <p>Submit any query. You'll see the Orchestrator evaluate intent, dispatch specialized agents, execute tools, and cross-examine outputs in real-time.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- View 2: Generated Artifacts Shelf -->
+            <div class="inspector-view" id="view-active-artifacts">
+              <div class="inspector-header">
+                <div>
+                  <h3 class="inspector-title">Generated Study Artifacts</h3>
+                  <p class="inspector-subtitle">Flashcard decks, summary cheat sheets, and custom quizzes</p>
+                </div>
+              </div>
+              <div class="artifacts-shelf-list" id="artifacts-shelf-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- View 3: Visual Concept Graph -->
+            <div class="inspector-view" id="view-concept-map">
+              <div class="inspector-header">
+                <div>
+                  <h3 class="inspector-title">Dynamic Concept Network</h3>
+                  <p class="inspector-subtitle">Interactive conceptual relationship graph for current topic</p>
+                </div>
+                <button class="btn-glass-sm" id="recenter-graph-btn">Reset View</button>
+              </div>
+              <div class="mindmap-canvas-container" id="mindmap-canvas-container">
+                <svg id="mindmap-svg" width="100%" height="100%"></svg>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 2: Socratic Tutor Mode -->
+      <section class="tab-pane" id="pane-socratic">
+        <div class="socratic-container">
+          <div class="socratic-hero">
+            <div class="socratic-badge">
+              <span class="badge-icon">🧠</span>
+              <span>Socratic Method Engine</span>
+            </div>
+            <h2>Active Inquiry & Deep Learning</h2>
+            <p>Socrates never hands you the final answer on a silver platter. Instead, he diagnoses where you are stuck, offers progressive scaffolded hints, and guides you to discover the breakthrough yourself.</p>
+          </div>
+
+          <div class="socratic-grid">
+            <div class="socratic-control-card">
+              <h3>Start a Guided Inquiry Session</h3>
+              <p>Enter a theorem, problem, or confusing concept. Socrates will formulate a personalized problem-solving ladder.</p>
+              
+              <div class="form-group">
+                <label for="socratic-concept-input">Concept or Problem to Explore</label>
+                <input type="text" id="socratic-concept-input" placeholder="e.g. Why does a negative times a negative equal a positive? or P vs NP">
+              </div>
+
+              <div class="form-group">
+                <label for="socratic-difficulty">My Current Familiarity</label>
+                <select id="socratic-difficulty">
+                  <option value="beginner">Beginner (ELI5 / Intuitive Analogy)</option>
+                  <option value="intermediate" selected>Intermediate (High School / Undergrad)</option>
+                  <option value="advanced">Advanced (Rigorous Proofs & Nuances)</option>
+                </select>
+              </div>
+
+              <button class="btn-primary-block" id="start-socratic-btn">
+                <span>Start Guided Dialogue</span>
+                <span>➔</span>
+              </button>
+
+              <div class="socratic-hints-box" id="socratic-hints-box" style="display: none;">
+                <div class="hint-header">
+                  <span class="hint-title">💡 Progressive Scaffold Hints</span>
+                  <span class="hint-level" id="hint-level-label">Level 1 of 3</span>
+                </div>
+                <p id="socratic-hint-text">Reflect on the geometric representation on a number line...</p>
+                <button class="btn-glass-sm" id="reveal-next-hint-btn">Reveal Next Hint (+1)</button>
+              </div>
+            </div>
+
+            <div class="socratic-feed-card" id="socratic-dialogue-feed">
+              <div class="socratic-empty">
+                <div class="empty-icon">🏛️</div>
+                <h4>No active Socratic session yet</h4>
+                <p>Choose a concept on the left or click below for a classic inquiry.</p>
+                <div class="preset-socratic-pills">
+                  <button class="pill-btn" data-socratic="Why is 0 factorial (0!) equal to 1?">Why is 0! = 1?</button>
+                  <button class="pill-btn" data-socratic="Why can't we travel faster than the speed of light?">Speed of Light Limit</button>
+                  <button class="pill-btn" data-socratic="How does a Transformer Neural Network pay attention?">Transformer Attention</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Active Recall Flashcard Deck -->
+      <section class="tab-pane" id="pane-flashcards">
+        <div class="flashcards-container">
+          
+          <div class="deck-header">
+            <div>
+              <h2 class="deck-title">Interactive Spaced-Recall Deck</h2>
+              <p class="deck-subtitle">Autonomous agent generates flashcards with active-recall triggers and spaced mastery levels.</p>
+            </div>
+            
+            <div class="deck-toolbar">
+              <button class="btn-glass-sm" id="generate-cards-btn">✨ Generate from Current Topic</button>
+              <button class="btn-glass-sm" id="shuffle-deck-btn">🔀 Shuffle</button>
+              <button class="btn-glass-sm" id="export-deck-btn">💾 Export Deck (JSON)</button>
+            </div>
+          </div>
+
+          <!-- Flashcard Player Interface -->
+          <div class="flashcard-stage">
+            <div class="card-progress-bar">
+              <div class="progress-fill" id="card-progress-fill" style="width: 12.5%;"></div>
+            </div>
+            <div class="card-counter-row">
+              <span class="card-count" id="card-current-index">Card 1 of 8</span>
+              <span class="card-tag" id="card-category-tag">Computer Science</span>
+            </div>
+
+            <!-- 3D Flippable Card -->
+            <div class="flashcard-3d-wrap" id="flashcard-card">
+              <div class="flashcard-inner">
+                
+                <!-- Front Side -->
+                <div class="flashcard-face card-front">
+                  <span class="face-badge">QUESTION</span>
+                  <div class="card-text-container">
+                    <p class="card-question-text" id="card-front-text">What is the core difference between BFS and DFS in graph traversal, and when is BFS optimal?</p>
+                  </div>
+                  <span class="flip-prompt">Click to flip & reveal answer ↷</span>
+                </div>
+
+                <!-- Back Side -->
+                <div class="flashcard-face card-back">
+                  <span class="face-badge answer">SYNTHESIS & EXPLANATION</span>
+                  <div class="card-text-container">
+                    <p class="card-answer-text" id="card-back-text">BFS (Breadth-First Search) explores neighbor-by-neighbor using a FIFO Queue. It is optimal for finding the shortest path on unweighted graphs. DFS explores depth using a LIFO Stack and is suited for connectivity and topological sorting.</p>
+                    <div class="card-mnemonic" id="card-mnemonic-box">
+                      <strong>💡 Agent Mnemonic:</strong> "BFS = Broad Flow in Streets (Shortest distance); DFS = Deep Fall into Secrets."
+                    </div>
+                  </div>
+                  <span class="flip-prompt">Click to flip back ↶</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Rating Controls -->
+            <div class="recall-rating-row">
+              <button class="btn-recall hard" id="btn-rate-hard">
+                <span class="rate-emoji">🔴</span>
+                <span>Hard (Review in 10m)</span>
+              </button>
+              <button class="btn-recall good" id="btn-rate-good">
+                <span class="rate-emoji">🟡</span>
+                <span>Good (Review in 1d)</span>
+              </button>
+              <button class="btn-recall easy" id="btn-rate-easy">
+                <span class="rate-emoji">🟢</span>
+                <span>Easy (Mastered)</span>
+              </button>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="card-nav-controls">
+              <button class="btn-nav-card" id="btn-prev-card" aria-label="Previous card">← Prev</button>
+              <button class="btn-nav-card" id="btn-next-card" aria-label="Next card">Next →</button>
+            </div>
+
+          </div>
+
+          <!-- Deck Overview Grid -->
+          <div class="deck-overview-section">
+            <h3>Deck Cards (<span id="total-deck-count">8</span>)</h3>
+            <div class="deck-mini-grid" id="deck-mini-grid">
+              <!-- Dynamically populated mini cards -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 4: Quiz Arena -->
+      <section class="tab-pane" id="pane-quiz">
+        <div class="quiz-container">
+          
+          <div class="quiz-hero">
+            <div class="quiz-badge">
+              <span class="badge-icon">🎯</span>
+              <span>Kortex Diagnostic Engine</span>
+            </div>
+            <h2>Active Diagnostic Quiz Arena</h2>
+            <p>Test your conceptual retention with adaptive multi-choice and short-answer prompts generated dynamically by the testing agent.</p>
+          </div>
+
+          <!-- Quiz Setup / Dashboard -->
+          <div class="quiz-setup-card" id="quiz-setup-card">
+            <div class="setup-row">
+              <div class="form-group">
+                <label for="quiz-topic-input">Quiz Subject / Topic</label>
+                <input type="text" id="quiz-topic-input" value="Computer Science: Algorithms & Data Structures" placeholder="e.g. Mitochondria & Cellular Respiration">
+              </div>
+              <div class="form-group">
+                <label for="quiz-length-select">Number of Questions</label>
+                <select id="quiz-length-select">
+                  <option value="3">⚡ Quick 3-Question Sprint</option>
+                  <option value="5" selected>🎯 Standard 5 Questions</option>
+                  <option value="8">🔥 Deep Mastery (8 Questions)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>&nbsp;</label>
+                <button class="btn-primary-block" id="start-quiz-btn">Generate & Start Quiz</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Quiz Arena -->
+          <div class="quiz-active-area" id="quiz-active-area" style="display: none;">
+            
+            <div class="quiz-stats-header">
+              <div class="stat-pill">
+                <span>Question</span>
+                <strong id="quiz-q-num">1 / 5</strong>
+              </div>
+              <div class="stat-pill">
+                <span>Current Score</span>
+                <strong id="quiz-score-pill">0 pts</strong>
+              </div>
+              <div class="stat-pill">
+                <span>Streak</span>
+                <strong id="quiz-streak-pill">🔥 0</strong>
+              </div>
+            </div>
+
+            <div class="quiz-question-card">
+              <div class="q-badge" id="quiz-difficulty-badge">MEDIUM</div>
+              <h3 class="quiz-question-title" id="quiz-question-title">What is the average time complexity of searching in a Balanced Binary Search Tree (AVL/Red-Black)?</h3>
+              
+              <div class="quiz-options-list" id="quiz-options-list">
+                <!-- Options rendered here -->
+              </div>
+
+              <!-- Explanation container after answer chosen -->
+              <div class="quiz-explanation-box" id="quiz-explanation-box" style="display: none;">
+                <div class="explanation-title" id="explanation-title">✅ Correct!</div>
+                <p id="explanation-body">Because the tree maintains a height bounded by O(log N) through self-balancing rotations, search, insertion, and deletion all take O(log N) operations in both the average and worst cases.</p>
+                <button class="btn-primary-sm" id="quiz-next-question-btn">Next Question ➔</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Quiz Results Modal/View -->
+          <div class="quiz-results-card" id="quiz-results-card" style="display: none;">
+            <div class="results-trophy">🏆</div>
+            <h2 id="results-headline">Diagnostic Complete!</h2>
+            <p class="results-score-big" id="results-score-big">Score: 4 / 5 (80%)</p>
+            <div class="results-agent-feedback" id="results-agent-feedback">
+              <strong>Agent Kortex Assessment:</strong> Strong grasp on tree structures and hashing fundamentals. Recommend quick Socratic review on dynamic programming edge cases!
+            </div>
+            <div class="results-actions">
+              <button class="btn-primary-sm" id="restart-quiz-btn">Retake Quiz</button>
+              <button class="btn-glass-sm" id="create-flashcards-from-mistakes-btn">Turn Mistakes into Flashcards</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 5: Adaptive Study Planner -->
+      <section class="tab-pane" id="pane-planner">
+        <div class="planner-container">
+          
+          <div class="planner-hero">
+            <div>
+              <div class="planner-badge">
+                <span class="badge-icon">⏱️</span>
+                <span>Chronos Autonomous Planner</span>
+              </div>
+              <h2>Adaptive Schedule & Milestone Decomposer</h2>
+              <p>Tell Chronos your upcoming exam date, project deadline, or learning target. Chronos constructs an actionable timeline, Pomodoro study sessions, and milestone checkpoints.</p>
+            </div>
+
+            <!-- Integrated Pomodoro Full Controller -->
+            <div class="pomodoro-full-card">
+              <div class="pomo-mode-tabs">
+                <button class="pomo-tab active" data-pomo="25">Focus (25m)</button>
+                <button class="pomo-tab" data-pomo="5">Short Break (5m)</button>
+                <button class="pomo-tab" data-pomo="15">Long Break (15m)</button>
+              </div>
+              <div class="pomo-digits" id="pomo-big-digits">25:00</div>
+              <div class="pomo-controls">
+                <button class="btn-pomo primary" id="pomo-start-pause-btn">Start Focus</button>
+                <button class="btn-pomo" id="pomo-reset-btn">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Goal Decomposer Input -->
+          <div class="plan-generator-card">
+            <h3>Generate Autonomous Study Roadmap</h3>
+            <div class="plan-inputs-grid">
+              <div class="form-group">
+                <label for="plan-goal-input">Learning Goal or Exam Name</label>
+                <input type="text" id="plan-goal-input" value="Master Data Structures & Algorithms Final Exam" placeholder="e.g. AP Chemistry Exam in 14 days">
+              </div>
+              <div class="form-group">
+                <label for="plan-timeframe-select">Available Timeframe</label>
+                <select id="plan-timeframe-select">
+                  <option value="3days">⚡ 3-Day Rapid Crash Course</option>
+                  <option value="1week">📅 1-Week Focused Sprint</option>
+                  <option value="2weeks" selected>🗓️ 2-Week Balanced Roadmap</option>
+                  <option value="1month">🏆 1-Month Comprehensive Mastery</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="plan-hours-daily">Study Hours / Day</label>
+                <select id="plan-hours-daily">
+                  <option value="1">1 Hour (2 Pomodoros)</option>
+                  <option value="2" selected>2 Hours (4 Pomodoros)</option>
+                  <option value="4">4 Hours (Intensive)</option>
+                </select>
+              </div>
+              <div class="form-group submit-col">
+                <label>&nbsp;</label>
+                <button class="btn-primary-block" id="generate-plan-btn">Decompose with Chronos</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Milestone Roadmap Display -->
+          <div class="roadmap-timeline-wrapper">
+            <div class="timeline-header">
+              <h3 id="timeline-title">2-Week Milestones Roadmap</h3>
+              <span class="timeline-meta" id="timeline-meta">8 Milestones • 16 Pomodoro Blocks • Dynamic Pacing</span>
+            </div>
+
+            <div class="timeline-steps" id="timeline-steps">
+              <!-- Milestones rendered here dynamically -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 6: Essay & Rubric Critic -->
+      <section class="tab-pane" id="pane-critic">
+        <div class="critic-container">
+          
+          <div class="critic-hero">
+            <div class="critic-badge">
+              <span class="badge-icon">✍️</span>
+              <span>Academic Rubric Critic</span>
+            </div>
+            <h2>Rigorous Essay & Draft Reviewer</h2>
+            <p>Paste your thesis statement, paragraph, or essay draft. The Critic evaluates your work across 4 academic dimensions: <strong>Thesis Strength</strong>, <strong>Evidence & Arguments</strong>, <strong>Structure & Flow</strong>, and <strong>Academic Tone</strong>.</p>
+          </div>
+
+          <div class="critic-split-layout">
+            
+            <!-- Left: Student Draft Input -->
+            <div class="critic-input-panel">
+              <div class="panel-header">
+                <h3>Your Draft or Argument</h3>
+                <div class="preset-drafts">
+                  <span>Samples:</span>
+                  <button class="btn-glass-sm" id="sample-essay-history">History Essay</button>
+                  <button class="btn-glass-sm" id="sample-essay-science">AI Ethics Paper</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="essay-title-input">Paper Title / Prompt</label>
+                <input type="text" id="essay-title-input" value="The Ethical Implications of Generative AI in Creative Industries" placeholder="Title or prompt...">
+              </div>
+
+              <div class="form-group">
+                <label for="essay-text-input">Draft Text</label>
+                <textarea id="essay-text-input" class="essay-textarea" rows="12" placeholder="Paste your essay introduction, body paragraph, or complete draft here..."></textarea>
+              </div>
+
+              <button class="btn-primary-block" id="evaluate-essay-btn">
+                <span>Evaluate with Rubric Critic</span>
+                <span>✨</span>
+              </button>
+            </div>
+
+            <!-- Right: Rubric Evaluation Dashboard -->
+            <div class="critic-report-panel" id="critic-report-panel">
+              <div class="critic-empty-state" id="critic-empty-state">
+                <div class="empty-icon">📝</div>
+                <h4>Awaiting Essay Submission</h4>
+                <p>Paste a draft on the left and click "Evaluate" to receive real-time grade projections, rubric scorecards, and line-by-line improvement suggestions.</p>
+              </div>
+
+              <div class="critic-scored-content" id="critic-scored-content" style="display: none;">
+                <!-- Grade Projection Header -->
+                <div class="grade-banner">
+                  <div class="grade-score-circle" id="projected-grade">A-</div>
+                  <div class="grade-summary">
+                    <h3 id="grade-label">Strong Argumentative Structure</h3>
+                    <p id="grade-summary-text">Clear thesis statement with compelling rhetorical evidence. Main area for improvement is addressing counter-arguments.</p>
+                  </div>
+                </div>
+
+                <!-- 4 Rubric Metric Gauges -->
+                <div class="rubric-metrics-grid">
+                  <div class="metric-card">
+                    <span class="metric-name">Thesis Clarity</span>
+                    <strong class="metric-value" id="metric-thesis">92 / 100</strong>
+                    <div class="metric-bar"><div class="bar-fill" id="bar-thesis" style="width: 92%;"></div></div>
+                  </div>
+                  <div class="metric-card">
+                    <span class="metric-name">Evidence & Logic</span>
+                    <strong class="metric-value" id="metric-evidence">85 / 100</strong>
+                    <div class="metric-bar"><div class="bar-fill" id="bar-evidence" style="width: 85%;"></div></div>
+                  </div>
+                  <div class="metric-card">
+                    <span class="metric-name">Cohesion & Flow</span>
+                    <strong class="metric-value" id="metric-cohesion">88 / 100</strong>
+                    <div class="metric-bar"><div class="bar-fill" id="bar-cohesion" style="width: 88%;"></div></div>
+                  </div>
+                  <div class="metric-card">
+                    <span class="metric-name">Tone & Citations</span>
+                    <strong class="metric-value" id="metric-tone">90 / 100</strong>
+                    <div class="metric-bar"><div class="bar-fill" id="bar-tone" style="width: 90%;"></div></div>
+                  </div>
+                </div>
+
+                <!-- Line-by-Line Suggestions -->
+                <div class="critic-suggestions-section">
+                  <h4>💡 Actionable Recommendations</h4>
+                  <ul class="suggestions-list" id="critic-suggestions-list">
+                    <!-- Populated dynamically -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Gemini API Configuration Modal -->
+  <div class="modal-backdrop" id="api-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">⚙️</span>
+          <h3>AI Engine Settings</h3>
+        </div>
+        <button class="modal-close-btn" id="close-api-modal-btn">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-description">
+          MindForge features a built-in <strong>Intelligent Local Agent Engine</strong> that provides instant autonomous reasoning, flashcards, and quizzes offline.
+        </p>
+        <p class="modal-description">
+          You can optionally provide a <strong>Google Gemini API Key</strong> to connect live cloud LLM reasoning for any open-ended or specialized subject.
+        </p>
+
+        <div class="engine-mode-picker">
+          <label class="radio-card">
+            <input type="radio" name="engine-mode" value="local" id="mode-local" checked>
+            <div class="radio-content">
+              <strong>⚡ Local Agentic Engine (Default)</strong>
+              <span>Instant response, pre-loaded multi-agent reasoning, zero latency, works completely offline.</span>
+            </div>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="engine-mode" value="gemini" id="mode-gemini">
+            <div class="radio-content">
+              <strong>✨ Live Gemini API (Cloud)</strong>
+              <span>Powered by Gemini 2.5 Flash / 1.5 Flash for limitless open-ended subject reasoning.</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group api-key-field" id="gemini-key-wrapper" style="display: none;">
+          <label for="gemini-api-key-input">Gemini API Key</label>
+          <input type="password" id="gemini-api-key-input" placeholder="AIzaSy..." autocomplete="off">
+          <span class="field-hint">Your API key is saved locally in your browser's localStorage and never transmitted to any third-party server.</span>
+        </div>
+
+        <div class="test-connection-status" id="test-connection-status" style="display: none;"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-glass-sm" id="test-api-btn">Test Connection</button>
+        <button class="btn-primary-sm" id="save-api-settings-btn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="gemini.js"></script>
+  <script src="agents.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
